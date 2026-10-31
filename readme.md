@@ -6,7 +6,7 @@ Este proyecto consiste en el desarrollo de un sistema de gestión de ventas y me
 
 El objetivo es implementar un sistema que permita administrar productos, registrar ventas, controlar el stock y consultar información almacenada, aplicando estructuras de datos, tipos de datos abstractos (TDA) y persistencia mediante archivos binarios.
 
-El caso de uso que vamos a utilizar es usando el rol de un pequeño de emprendedor de productos tecnologicos y esta herramienta le facilita la gestion de su negocio y le ayuda a llevar un trazabilidad de los datos y una organizacion mas profesional 
+El caso de uso que vamos a utilizar es usando el rol de un pequeño de emprendedor de productos tecnologicos y esta herramienta le facilita la gestion de su negocio y le ayuda a llevar una trazabilidad de los datos y una organizacion mas profesional 
 ---
 
 ##  Alcance del proyecto
