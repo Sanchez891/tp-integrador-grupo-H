@@ -5,6 +5,7 @@ typedef struct{
     string nombre;
     int cantidad;
     float stock;
+    float precio;
 }tProducto;
 
 typedef struct{
