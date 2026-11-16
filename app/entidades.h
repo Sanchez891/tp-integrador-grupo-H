@@ -14,3 +14,9 @@ typedef struct{
     int metodoPago;
     string fecha;
 }tVentas;
+
+typedef struct Nodo{
+    tProducto info;
+    struct Nodo * nodoizq;
+    struct Nodo * nododer;
+}tArbolProductos;
