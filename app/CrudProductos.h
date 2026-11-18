@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#define STOCKMIN 8
 
 void inicializarProducto(tProducto*);
 tProducto CrearProducto(int,string,int,float,float);
@@ -9,6 +10,8 @@ void AltaProducto(tArbolProductos **, int,string,int,float,float);
 void ModificarProducto(tArbolProductos *, int,string,int,float,float);
 void BajaProducto(tArbolProductos **, int);
 tArbolProductos *BuscarMenor(tArbolProductos *);
+void ConsultarStock(tArbolProductos *pArbol, int pCodigo);
+void ConsultarStockMinimo(tArbolProductos *pArbol);
 
 void inicializarProducto(tProducto * pProducto){
     pProducto->codigo = 0;
@@ -133,5 +136,37 @@ void BajaProducto(tArbolProductos **pArbol, int pCodigo){
                 printf("Producto dado de baja correctamente");
             }
         }
+    }
+}
+
+void ConsultarStock(tArbolProductos *pArbol, int pCodigo) {
+    if (pArbol == NULL) {
+        printf("Producto inexistente.\n");
+    } else {
+        if (pCodigo < pArbol->info.codigo) {
+            ConsultarStock(pArbol->nodoizq, pCodigo);
+        } else {
+            if (pCodigo > pArbol->info.codigo) {
+                ConsultarStock(pArbol->nododer, pCodigo);
+            } else {
+                printf("\nProducto: %s", pArbol->info.nombre);
+                printf("\nCodigo: %d", pArbol->info.codigo);
+                printf("\nStock disponible: %.2f\n", pArbol->info.stock);
+            }
+        }
+    }
+}
+
+void ConsultarStockMinimo(tArbolProductos *pArbol) {
+    if (pArbol != NULL) {
+        ConsultarStockMinimo(pArbol->nodoizq);
+        if (pArbol->info.stock <= STOCKMIN) {
+            printf("\nProducto: %s", pArbol->info.nombre);
+            printf("\nCodigo: %d", pArbol->info.codigo);
+            printf("\nStock actual: %.2f", pArbol->info.stock);
+            printf("\nStock minimo: %d", pArbol->info.cantidad);
+            printf("\n-----------------------------");
+        }
+        ConsultarStockMinimo(pArbol->nododer);
     }
 }
