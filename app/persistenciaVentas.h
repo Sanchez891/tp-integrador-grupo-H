@@ -1,3 +1,6 @@
+#ifndef PERSISTENCIAVENTAS_H
+#define PERSISTENCIAVENTAS_H
+
 
 #include <stdio.h>
 #include "entidades.h"
@@ -10,7 +13,9 @@ void guardarVenta(tVentas pVenta) {
     if (archivo == NULL) {
         return;
     }
-    fwrite(&pVenta, sizeof(tVentas), 1, archivo) == 1;
+    if (fwrite(&pVenta, sizeof(tVentas), 1, archivo) != 1) {
+        printf("Error al guardar la venta\n");
+    }
     fclose(archivo);
 }
 
@@ -31,3 +36,5 @@ void listarVentas(void) {
     }
     fclose(archivo);
 }
+
+#endif

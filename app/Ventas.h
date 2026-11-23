@@ -1,4 +1,7 @@
-#include <entidades.h>
+#ifndef VENTAS_H
+#define VENTAS_H
+
+#include "entidades.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -64,7 +67,8 @@ bool AgregarAlCarrito(tNodoCarrito **pCarrito,tArbolProductos *pArbol,int pCodig
     }
     // Copiamos los datos del producto al detalle de venta.
     nuevoNodo->info.codigo = producto->codigo;
-    strcpy(nuevoNodo->info.nombre, producto->nombre);
+    strncpy(nuevoNodo->info.nombre, producto->nombre, sizeof(nuevoNodo->info.nombre) - 1);
+    nuevoNodo->info.nombre[sizeof(nuevoNodo->info.nombre) - 1] = '\0';
     nuevoNodo->info.cantidad = pCantidad;
     nuevoNodo->info.precioUnitario = producto->precio;
     nuevoNodo->info.subtotal = pCantidad * producto->precio;
@@ -89,8 +93,12 @@ tVentas GenerarVenta(tNodoCarrito *pCarrito,int pMetodoPago,string pFecha) {
     nuevaVenta.canProductos = 0;
     nuevaVenta.total = 0;
     nuevaVenta.metodoPago = pMetodoPago;
-    obtenerFecha(nuevaVenta.fecha);
-    strcpy(nuevaVenta.fecha, pFecha);
+    if (pFecha != NULL && pFecha[0] != '\0') {
+        strncpy(nuevaVenta.fecha, pFecha, sizeof(nuevaVenta.fecha) - 1);
+        nuevaVenta.fecha[sizeof(nuevaVenta.fecha) - 1] = '\0';
+    } else {
+        obtenerFecha(nuevaVenta.fecha);
+    }
     // Recorremos el carrito.
     while (pCarrito != NULL) {
         nuevaVenta.canProductos++;
@@ -123,3 +131,26 @@ void GenerarComprobante(tVentas pVenta,tNodoCarrito *pCarrito) {
     printf("       GRACIAS POR SU COMPRA        \n");
     printf("====================================\n");
 }
+
+void DescontarStock(tArbolProductos *pArbol, tNodoCarrito *pCarrito) {
+    tProducto *producto;
+    while (pCarrito != NULL) {
+        producto = BuscarProducto(pArbol, pCarrito->info.codigo);
+        if (producto != NULL) {
+            producto->stock -= pCarrito->info.cantidad;
+        }
+        pCarrito = pCarrito->sig;
+    }
+}
+
+void LiberarCarrito(tNodoCarrito **pCarrito) {
+    tNodoCarrito *auxiliar;
+    while (*pCarrito != NULL) {
+        auxiliar = *pCarrito;
+        *pCarrito = (*pCarrito)->sig;
+        free(auxiliar);
+    }
+}
+
+
+#endif

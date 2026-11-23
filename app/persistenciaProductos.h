@@ -1,6 +1,9 @@
+#ifndef PERSISTENCIAPRODUCTOS_H
+#define PERSISTENCIAPRODUCTOS_H
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <entidades.h>
+#include "entidades.h"
 
 #define MARCA_NULO 0
 #define MARCA_NODO 1
@@ -57,3 +60,6 @@ void recuperarProductos(tArbolProductos **pArbol, FILE *archivo){
     // Reconstruimos el subárbol derecho.
     recuperarProductos(&(*pArbol)->nododer, archivo);
 }
+
+
+#endif

@@ -1,4 +1,7 @@
-#include <entidades.h>
+#ifndef CRUDPRODUCTOS_H
+#define CRUDPRODUCTOS_H
+
+#include "entidades.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,6 +15,7 @@ void BajaProducto(tArbolProductos **, int);
 tArbolProductos *BuscarMenor(tArbolProductos *);
 void ConsultarStock(tArbolProductos *pArbol, int pCodigo);
 void ConsultarStockMinimo(tArbolProductos *pArbol);
+void LiberarArbol(tArbolProductos **pArbol);
 
 void inicializarProducto(tProducto * pProducto){
     pProducto->codigo = 0;
@@ -24,10 +28,13 @@ void inicializarProducto(tProducto * pProducto){
 tProducto CrearProducto(int pCodigo, string pNombre, int pCantidad, float pStock, float pPrecio){
     tProducto nuevoProducto;
     inicializarProducto(&nuevoProducto);
-    strcpy(nuevoProducto.nombre, pNombre);
+    strncpy(nuevoProducto.nombre, pNombre, sizeof(nuevoProducto.nombre) - 1);
+    nuevoProducto.nombre[sizeof(nuevoProducto.nombre) - 1] = '\0';
     nuevoProducto.codigo = pCodigo;
     if(pCantidad > 0){
         nuevoProducto.cantidad = pCantidad;
+    }else{
+        nuevoProducto.cantidad = STOCKMIN;
     }
     if(pStock > 0){
         nuevoProducto.stock = pStock;
@@ -47,6 +54,7 @@ void AltaProducto(tArbolProductos **pArbol, int pCodigo, string pNombre, int pCa
             (*pArbol)->info = nuevoProducto;
             (*pArbol)->nodoizq = NULL;
             (*pArbol)->nododer = NULL;
+            printf("Producto dado de alta correctamente");
         }else{
             printf("Error con el almacenamiento de productos");
         }
@@ -73,12 +81,17 @@ void ModificarProducto(tArbolProductos *pArbol, int pCodigo, string pNombre, int
             if(pCodigo > pArbol->info.codigo){
                 ModificarProducto(pArbol->nododer,pCodigo,pNombre,pCantidad,pStock,pPrecio);
             }else{
-                // Actualizamos los datos del producto encontrado.
-                strcpy(pArbol->info.nombre,pNombre);
-                pArbol->info.cantidad = pCantidad;
-                pArbol->info.stock = pStock;
-                pArbol->info.precio = pPrecio;
-                printf("Producto modificado correctamente");
+                if(pCantidad < 0 || pStock < 0 || pPrecio < 0){
+                    printf("Datos invalidos: no se permiten valores negativos");
+                }else{
+                    // Actualizamos los datos del producto encontrado.
+                    strncpy(pArbol->info.nombre, pNombre, sizeof(pArbol->info.nombre) - 1);
+                    pArbol->info.nombre[sizeof(pArbol->info.nombre) - 1] = '\0';
+                    pArbol->info.cantidad = pCantidad;
+                    pArbol->info.stock = pStock;
+                    pArbol->info.precio = pPrecio;
+                    printf("Producto modificado correctamente");
+                }
             }
         }
     }
@@ -108,6 +121,7 @@ void BajaProducto(tArbolProductos **pArbol, int pCodigo){
 
                     free(*pArbol);
                     *pArbol = NULL;
+                    printf("Producto dado de baja correctamente");
 
                 }else{
                     // CASO 2: EL NODO TIENE SOLAMENTE HIJO DERECHO.
@@ -116,6 +130,7 @@ void BajaProducto(tArbolProductos **pArbol, int pCodigo){
                         auxiliar = *pArbol;
                         *pArbol = (*pArbol)->nododer;
                         free(auxiliar);
+                        printf("Producto dado de baja correctamente");
                     }else{
                         // CASO 2: EL NODO TIENE SOLAMENTE HIJO IZQUIERDO.
                         if((*pArbol)->nododer == NULL){
@@ -123,6 +138,7 @@ void BajaProducto(tArbolProductos **pArbol, int pCodigo){
                             auxiliar = *pArbol;
                             *pArbol = (*pArbol)->nodoizq;
                             free(auxiliar);
+                            printf("Producto dado de baja correctamente");
                         }else{
                             // CASO 3: EL NODO TIENE DOS HIJOS.
                             auxiliar = BuscarMenor((*pArbol)->nododer);
@@ -133,7 +149,6 @@ void BajaProducto(tArbolProductos **pArbol, int pCodigo){
                         }
                     }
                 }
-                printf("Producto dado de baja correctamente");
             }
         }
     }
@@ -160,7 +175,7 @@ void ConsultarStock(tArbolProductos *pArbol, int pCodigo) {
 void ConsultarStockMinimo(tArbolProductos *pArbol) {
     if (pArbol != NULL) {
         ConsultarStockMinimo(pArbol->nodoizq);
-        if (pArbol->info.stock <= STOCKMIN) {
+        if (pArbol->info.stock <= pArbol->info.cantidad) {
             printf("\nProducto: %s", pArbol->info.nombre);
             printf("\nCodigo: %d", pArbol->info.codigo);
             printf("\nStock actual: %.2f", pArbol->info.stock);
@@ -170,3 +185,15 @@ void ConsultarStockMinimo(tArbolProductos *pArbol) {
         ConsultarStockMinimo(pArbol->nododer);
     }
 }
+
+void LiberarArbol(tArbolProductos **pArbol) {
+    if (*pArbol != NULL) {
+        LiberarArbol(&(*pArbol)->nodoizq);
+        LiberarArbol(&(*pArbol)->nododer);
+        free(*pArbol);
+        *pArbol = NULL;
+    }
+}
+
+
+#endif
