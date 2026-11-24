@@ -1,7 +1,3 @@
-#ifndef CRUDPRODUCTOS_H
-#define CRUDPRODUCTOS_H
-
-#include "entidades.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,8 +24,7 @@ void inicializarProducto(tProducto * pProducto){
 tProducto CrearProducto(int pCodigo, string pNombre, int pCantidad, float pStock, float pPrecio){
     tProducto nuevoProducto;
     inicializarProducto(&nuevoProducto);
-    strncpy(nuevoProducto.nombre, pNombre, sizeof(nuevoProducto.nombre) - 1);
-    nuevoProducto.nombre[sizeof(nuevoProducto.nombre) - 1] = '\0';
+    strcpy(nuevoProducto.nombre, pNombre);
     nuevoProducto.codigo = pCodigo;
     if(pCantidad > 0){
         nuevoProducto.cantidad = pCantidad;
@@ -85,8 +80,7 @@ void ModificarProducto(tArbolProductos *pArbol, int pCodigo, string pNombre, int
                     printf("Datos invalidos: no se permiten valores negativos");
                 }else{
                     // Actualizamos los datos del producto encontrado.
-                    strncpy(pArbol->info.nombre, pNombre, sizeof(pArbol->info.nombre) - 1);
-                    pArbol->info.nombre[sizeof(pArbol->info.nombre) - 1] = '\0';
+                    strcpy(pArbol->info.nombre,pNombre);
                     pArbol->info.cantidad = pCantidad;
                     pArbol->info.stock = pStock;
                     pArbol->info.precio = pPrecio;
@@ -194,6 +188,3 @@ void LiberarArbol(tArbolProductos **pArbol) {
         *pArbol = NULL;
     }
 }
-
-
-#endif

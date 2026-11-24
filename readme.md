@@ -67,14 +67,14 @@ Bienvenida
 
 Al confirmar una venta se descuenta el stock, se guarda la venta en `ventas.dat`, se actualiza `productos.dat` y se emite el comprobante. Los productos también se guardan después de cada alta, baja o modificación.
 
-Las pantallas validan los datos ingresados: si se escribe un texto donde se espera un número, o se elige una opción inexistente, se vuelve a pedir el dato.
+Los datos se leen con `scanf`. Los nombres admiten espacios (se leen con `scanf(" %[^\n]")`). Si se elige una opción de menú inexistente se muestra "Opcion invalida", y el método de pago se vuelve a pedir hasta que sea válido (1 a 4). Los datos numéricos deben ingresarse como números.
 
 ### Datos de un producto
 
 | Campo | Descripción |
 |---|---|
 | Código | Identificador único (clave del árbol). |
-| Nombre | Hasta 59 caracteres; si es más largo se recorta. |
+| Nombre | Hasta 59 caracteres (tipo `string`). |
 | Stock actual | Unidades disponibles para la venta. |
 | Stock mínimo | Por debajo o igual a este valor, el producto aparece en la consulta de stock mínimo. Si no se indica (0), se usa el valor por defecto `STOCKMIN` (8). |
 | Precio unitario | Precio de venta. |
@@ -117,10 +117,10 @@ app/
 │                           comprobante, descuento de stock y liberación del carrito.
 ├── persistenciaProductos.h Guardar y recuperar el ABB en archivo binario.
 ├── persistenciaVentas.h    Guardar ventas y listar el historial.
-└── pantallas.h             Menús, formularios y lectura validada de datos.
+└── pantallas.h             Menús, formularios y lectura de datos.
 ```
 
-Todos los `.h` tienen *include guard*, por lo que pueden incluirse en cualquier orden.
+`entidades.h` se incluye una sola vez, al principio de `main.c`, antes que los demás módulos; por eso los demás `.h` no lo incluyen.
 
 ### Funciones principales por módulo
 
@@ -142,7 +142,7 @@ Todos los `.h` tienen *include guard*, por lo que pueden incluirse en cualquier 
 - Menús: `PantallaMenuPrincipal`, `PantallaMenuProductos`, `PantallaMenuConsultas`
 - Productos: `PantallaFormularioProducto`, `PantallaPedirCodigo`
 - Ventas: `PantallaVenta`, `PantallaCarrito`, `PantallaAgregarProducto`, `PantallaMetodoPago`
-- Utilidades: `LeerEntero`, `LeerFloat`, `LeerTexto`, `PantallaConfirmar`, `PantallaMensaje`
+- Utilidades: `MostrarTitulo` (limpia con `system("cls")`), `Pausar` (`system("pause")`), `PantallaConfirmar`, `PantallaMensaje`
 
 Las pantallas solo muestran información y leen datos; no modifican el árbol, el carrito ni los archivos. Es `main.c` quien decide qué hacer con lo que devuelve cada pantalla.
 

@@ -1,9 +1,4 @@
-#ifndef PERSISTENCIAVENTAS_H
-#define PERSISTENCIAVENTAS_H
-
-
 #include <stdio.h>
-#include "entidades.h"
 
 void guardarVenta(tVentas pVenta);
 void listarVentas(void);
@@ -36,5 +31,3 @@ void listarVentas(void) {
     }
     fclose(archivo);
 }
-
-#endif

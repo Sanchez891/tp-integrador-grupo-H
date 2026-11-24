@@ -1,7 +1,3 @@
-#ifndef VENTAS_H
-#define VENTAS_H
-
-#include "entidades.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -67,8 +63,7 @@ bool AgregarAlCarrito(tNodoCarrito **pCarrito,tArbolProductos *pArbol,int pCodig
     }
     // Copiamos los datos del producto al detalle de venta.
     nuevoNodo->info.codigo = producto->codigo;
-    strncpy(nuevoNodo->info.nombre, producto->nombre, sizeof(nuevoNodo->info.nombre) - 1);
-    nuevoNodo->info.nombre[sizeof(nuevoNodo->info.nombre) - 1] = '\0';
+    strcpy(nuevoNodo->info.nombre, producto->nombre);
     nuevoNodo->info.cantidad = pCantidad;
     nuevoNodo->info.precioUnitario = producto->precio;
     nuevoNodo->info.subtotal = pCantidad * producto->precio;
@@ -94,8 +89,7 @@ tVentas GenerarVenta(tNodoCarrito *pCarrito,int pMetodoPago,string pFecha) {
     nuevaVenta.total = 0;
     nuevaVenta.metodoPago = pMetodoPago;
     if (pFecha != NULL && pFecha[0] != '\0') {
-        strncpy(nuevaVenta.fecha, pFecha, sizeof(nuevaVenta.fecha) - 1);
-        nuevaVenta.fecha[sizeof(nuevaVenta.fecha) - 1] = '\0';
+        strcpy(nuevaVenta.fecha, pFecha);
     } else {
         obtenerFecha(nuevaVenta.fecha);
     }
@@ -151,6 +145,3 @@ void LiberarCarrito(tNodoCarrito **pCarrito) {
         free(auxiliar);
     }
 }
-
-
-#endif

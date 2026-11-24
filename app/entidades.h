@@ -1,6 +1,3 @@
-#ifndef ENTIDADES_H
-#define ENTIDADES_H
-
 typedef char string[60];
 
 typedef struct{
@@ -35,5 +32,3 @@ typedef struct NodoCarrito {
     tDetalleVenta info;
     struct NodoCarrito *sig;
 } tNodoCarrito;
-
-#endif
