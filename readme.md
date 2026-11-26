@@ -4,108 +4,157 @@
 
 Este proyecto consiste en el desarrollo de un sistema de gestión de ventas y mercadería como parte del Trabajo Práctico Integrador de la asignatura **Algoritmos y Estructuras de Datos II**.
 
-El objetivo es implementar un sistema que permita administrar productos, registrar ventas, controlar el stock y consultar información almacenada, aplicando estructuras de datos, tipos de datos abstractos (TDA) y persistencia mediante archivos binarios.
+El sistema permite administrar productos, registrar ventas, controlar el stock y consultar la información almacenada, aplicando estructuras de datos, tipos de datos abstractos (TDA) y persistencia mediante archivos binarios.
 
-El caso de uso que vamos a utilizar es usando el rol de un pequeño de emprendedor de productos tecnologicos y esta herramienta le facilita la gestion de su negocio y le ayuda a llevar una trazabilidad de los datos y una organizacion mas profesional 
----
-
-##  Alcance del proyecto
-
-El sistema contempla las siguientes funcionalidades:
-
-- Login ficticio para simular el acceso al sistema.
-- Registrar ventas.
-- Buscar y agregar productos mediante su código.
-- Calcular subtotales y totales de las ventas.
-- Registrar métodos de pago.
-- Emitir comprobantes de venta.
-- Consultar el historial de ventas.
-- Registrar ingresos de mercadería.
-- Consultar el stock disponible.
-- Consultar el stock mínimo.
+El caso de uso es el de un pequeño emprendedor de productos tecnológicos: la herramienta le facilita la gestión de su negocio, le permite llevar la trazabilidad de los datos y le da una organización más profesional.
 
 ---
 
-##  Estructuras de datos y herramientas
+## Compilación y ejecución
 
-Para resolver las distintas funcionalidades del sistema se propone utilizar las siguientes estructuras:
+El programa es de consola y se compila con `gcc` desde la carpeta `app`:
+
+```bash
+cd app
+gcc main.c -o gestion.exe
+./gestion.exe
+```
+
+Al iniciar, el sistema carga los productos guardados en `productos.dat`. Si el archivo no existe (primer uso), arranca sin productos. Los archivos de datos se crean en la carpeta desde donde se ejecuta el programa.
+
+---
+
+## Funcionalidades
+
+| Funcionalidad | Estado |
+|---|---|
+| Alta, baja y modificación de productos | ✅ Implementada |
+| Buscar productos por código | ✅ Implementada |
+| Agregar productos al carrito (valida cantidad y stock disponible) | ✅ Implementada |
+| Calcular subtotales y total de la venta | ✅ Implementada |
+| Registrar el método de pago | ✅ Implementada |
+| Emitir el comprobante de venta | ✅ Implementada |
+| Descontar el stock al confirmar la venta | ✅ Implementada |
+| Consultar el historial de ventas | ✅ Implementada |
+| Consultar el stock de un producto | ✅ Implementada |
+| Consultar productos en stock mínimo | ✅ Implementada |
+| Registrar ingresos de mercadería (sumar stock a un producto existente) | ⏳ Pendiente (por ahora se hace desde "Modificar producto") |
+| Guardar el detalle de productos de cada venta | ⏳ Pendiente (se guarda solo el resumen: fecha, cantidad de productos, total y método de pago) |
+
+---
+
+## Flujo del sistema
+
+```
+Bienvenida
+  └ Menú principal
+     ├ 1. Nueva venta
+     │    ├ 1. Agregar producto (código y cantidad)
+     │    ├ 2. Confirmar venta → método de pago → comprobante
+     │    └ 0. Cancelar venta (pide confirmación si el carrito tiene productos)
+     ├ 2. Gestión de productos
+     │    ├ 1. Alta de producto
+     │    ├ 2. Baja de producto (muestra el producto y pide confirmación)
+     │    ├ 3. Modificar producto
+     │    └ 0. Volver
+     ├ 3. Consultas
+     │    ├ 1. Historial de ventas
+     │    ├ 2. Stock de un producto
+     │    ├ 3. Productos con stock mínimo
+     │    └ 0. Volver
+     └ 0. Salir (guarda los productos y libera la memoria)
+```
+
+Al confirmar una venta se descuenta el stock, se guarda la venta en `ventas.dat`, se actualiza `productos.dat` y se emite el comprobante. Los productos también se guardan después de cada alta, baja o modificación.
+
+Los datos se leen con `scanf`. Los nombres admiten espacios (se leen con `scanf(" %[^\n]")`). Si se elige una opción de menú inexistente se muestra "Opcion invalida", y el método de pago se vuelve a pedir hasta que sea válido (1 a 4). Los datos numéricos deben ingresarse como números.
+
+### Datos de un producto
+
+| Campo | Descripción |
+|---|---|
+| Código | Identificador único (clave del árbol). |
+| Nombre | Hasta 59 caracteres (tipo `string`). |
+| Stock actual | Unidades disponibles para la venta. |
+| Stock mínimo | Por debajo o igual a este valor, el producto aparece en la consulta de stock mínimo. Si no se indica (0), se usa el valor por defecto `STOCKMIN` (8). |
+| Precio unitario | Precio de venta. |
+
+No se aceptan valores negativos en el alta ni en la modificación.
+
+### Métodos de pago
+
+1. Efectivo
+2. Tarjeta de débito
+3. Tarjeta de crédito
+4. Transferencia
+
+---
+
+## Estructuras de datos y herramientas
 
 | Estructura / Recurso | Aplicación |
 |---|---|
-| Árboles | Organización y búsqueda de productos por código. |
-| Archivos binarios | Persistencia de productos, ventas y stock. |
-| TDA | Modularización de ventas, stock y persistencia. |
-| Colas | Administración del carrito de ventas. |
-| Struct | Representación de entidades como productos y ventas. |
+| Árbol binario de búsqueda (ABB) | Almacenamiento y búsqueda de productos por código. |
+| Lista enlazada | Carrito de la venta en curso (si un producto ya está en el carrito, se acumula la cantidad). |
+| Archivos binarios | Persistencia de productos (`productos.dat`) y ventas (`ventas.dat`). |
+| TDA | Modularización de productos, ventas, persistencia y pantallas. |
+| Struct | Representación de entidades como productos, ventas y detalle de venta. |
 
-### Organización de los TDA
-
-Se propone trabajar inicialmente con los siguientes módulos:
-
-- `ventas.h` – Definición de operaciones relacionadas con las ventas.
-- `stock.h` – Definición de operaciones relacionadas con el stock.
-- `persistencia.h` – Operaciones de lectura y escritura de archivos binarios.
-- `interfas.h` – formato de la informacion que se le va a entregar al usuario
-
-La implementación de cada módulo se realizará en su correspondiente archivo `main.c`, donde se definira el flujo
-del sistema
+El árbol se guarda en el archivo con un recorrido **preorden** y marcas de nodo vacío, de modo que al recuperarlo se reconstruye con la misma forma que tenía.
 
 ---
 
-##  Priorización de módulos
+## Organización del proyecto
 
-El desarrollo se organizará en cuatro módulos principales, siguiendo el siguiente orden de prioridad:
+```
+app/
+├── main.c                  Flujo principal: coordina menús, ventas, productos y consultas.
+├── entidades.h             Definición de los structs: tProducto, tVentas, tDetalleVenta,
+│                           tArbolProductos (nodo del ABB) y tNodoCarrito.
+├── CrudProductos.h         Alta, baja, modificación, consulta de stock, stock mínimo
+│                           y liberación del árbol.
+├── Ventas.h                Búsqueda de productos, carrito, generación de la venta,
+│                           comprobante, descuento de stock y liberación del carrito.
+├── persistenciaProductos.h Guardar y recuperar el ABB en archivo binario.
+├── persistenciaVentas.h    Guardar ventas y listar el historial.
+└── pantallas.h             Menús, formularios y lectura de datos.
+```
 
-### 1. Módulo de ventas
+`entidades.h` se incluye una sola vez, al principio de `main.c`, antes que los demás módulos; por eso los demás `.h` no lo incluyen.
 
-Responsable de gestionar las operaciones de venta.
+### Funciones principales por módulo
 
-Funcionalidades:
-- Generar una venta.
-- Buscar productos mediante su código.
-- Agregar productos al carrito.
-- Calcular subtotales y total.
-- Registrar el método de pago.
-- Emitir el comprobante de venta.
+**CrudProductos.h**
+- `AltaProducto`, `BajaProducto`, `ModificarProducto`
+- `ConsultarStock`, `ConsultarStockMinimo`
+- `LiberarArbol`
 
-### 2. Módulo CRUD de mercadería
+**Ventas.h**
+- `BuscarProducto`, `AgregarAlCarrito`
+- `GenerarVenta` (si recibe una fecha vacía usa la fecha y hora actual), `GenerarComprobante`
+- `DescontarStock`, `LiberarCarrito`
 
-Responsable de administrar los productos y la mercadería disponible.
+**persistenciaProductos.h / persistenciaVentas.h**
+- `guardarProductos`, `recuperarProductos`
+- `guardarVenta`, `listarVentas`
 
-Funcionalidades:
-- Alta de productos.
-- Baja de productos.
-- Modificación de productos.
+**pantallas.h**
+- Menús: `PantallaMenuPrincipal`, `PantallaMenuProductos`, `PantallaMenuConsultas`
+- Productos: `PantallaFormularioProducto`, `PantallaPedirCodigo`
+- Ventas: `PantallaVenta`, `PantallaCarrito`, `PantallaAgregarProducto`, `PantallaMetodoPago`
+- Utilidades: `MostrarTitulo` (limpia con `system("cls")`), `Pausar` (`system("pause")`), `PantallaConfirmar`, `PantallaMensaje`
 
-### 3. Módulo de persistencia
-
-Responsable de gestionar el almacenamiento de la información del sistema mediante archivos binarios.
-
-Funcionalidades:
-- Crear archivos binarios.
-- Leer información almacenada.
-- Modificar y actualizar los registros.
-- Mantener archivos independientes para cada módulo.
-
-### 4. Módulo de consulta de datos
-
-Responsable de permitir la consulta de información registrada en el sistema.
-
-Funcionalidades:
-- Consultar historial de ventas.
-- Consultar stock disponible.
-- Consultar stock mínimo.
+Las pantallas solo muestran información y leen datos; no modifican el árbol, el carrito ni los archivos. Es `main.c` quien decide qué hacer con lo que devuelve cada pantalla.
 
 ---
 
-##  Reglas y convenciones de desarrollo
+## Reglas y convenciones de desarrollo
 
 Para mantener un código organizado, modular y fácil de mantener, se establecen las siguientes reglas de trabajo:
 
 ### Representación de entidades
 
-- Las entidades del sistema, como productos y ventas, se representarán mediante tipos de datos `struct` en lenguaje C.
-- Los prototipos y las definiciones de estructuras se establecerán durante la etapa de diseño de cada módulo.
+- Las entidades del sistema, como productos y ventas, se representan mediante tipos de datos `struct` en lenguaje C, definidos en `entidades.h`.
 
 ### Modularización y desacoplamiento
 
@@ -118,34 +167,29 @@ Para mantener un código organizado, modular y fácil de mantener, se establecen
 
 - Se evitará mezclar responsabilidades diferentes dentro de una misma función.
 - Como regla general, cada función deberá tener como máximo dos responsabilidades.
-- Se permitirá una excepción cuando la función tenga como objetivo principal coordinar o definir un flujo de ejecución.
+- Se permitirá una excepción cuando la función tenga como objetivo principal coordinar o definir un flujo de ejecución (por ejemplo, `FlujoVenta`, `FlujoProductos` y `FlujoConsultas` en `main.c`).
 
 ---
 
-##  Tecnologías
+## Tecnologías
 
 - **Lenguaje:** C.
-- **Estructuras de datos:** Árboles y colas.
+- **Compilador:** GCC.
+- **Estructuras de datos:** Árbol binario de búsqueda y lista enlazada.
 - **Modularización:** Tipos de Datos Abstractos (TDA).
 - **Persistencia:** Archivos binarios.
 - **Control de versiones:** Git y GitHub.
-- **Organizacion de tareas:** Trello.
+- **Organización de tareas:** Trello.
 
 ---
 
-##  Organización del proyecto
+## Trabajo en equipo
 
-La estructura de directorios y archivos se definirá durante la implementación, respetando la separación entre módulos, interfaces (`.h`) e implementaciones (`.c`).
-
----
-
-##  Trabajo en equipo
-
-El desarrollo se realizará de manera colaborativa, respetando las convenciones establecidas y manteniendo una organización modular que facilite la integración de los distintos componentes del sistema.
+El desarrollo se realiza de manera colaborativa, respetando las convenciones establecidas y manteniendo una organización modular que facilite la integración de los distintos componentes del sistema.
 
 ---
 
-##  Contexto académico
+## Contexto académico
 
 **Asignatura:** Algoritmos y Estructuras de Datos II (AED2).
 
